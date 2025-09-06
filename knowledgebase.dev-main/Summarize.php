@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
 
             <hr>
 
-            <form action="summarize.php" method="POST" enctype="multipart/form-data">
+            <form action="result.php" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="category">📂 Select or Create Folders</label>
                     <input type="text" name="category" class="form-control" placeholder="+ New Folders" required>

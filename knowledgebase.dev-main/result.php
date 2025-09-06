@@ -1,9 +1,16 @@
 <?php
-// Get uploaded file name and category from previous form submission
+session_start();
+
+// Initialize history if not exists
+if (!isset($_SESSION['chat_history'])) {
+    $_SESSION['chat_history'] = [];
+}
+
+// Get uploaded file and category
 $uploadedFile = $_POST['docFile'] ?? "Demo_Document.pdf";
 $category = $_POST['category'] ?? "General";
 
-// Predefined fun answers for demo
+// Predefined fun answers
 $answers = [
     "🤖 This document is basically about <strong>$uploadedFile</strong>. Super important stuff! 🚀",
     "🎯 The main point? Stay organized and never miss deadlines! 📅",
@@ -12,19 +19,21 @@ $answers = [
     "🤓 Key takeaway: Always check your notes twice, trust me 😅"
 ];
 
-// Pick a random answer when a question is asked
+// Handle new question
+$question = $_POST['question'] ?? null;
 $botAnswer = null;
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['question'])) {
-    $question = htmlspecialchars(trim($_POST['question']));
+if ($question) {
+    $question = htmlspecialchars(trim($question));
     $botAnswer = $answers[array_rand($answers)];
+
+    // Add to session history
+    $_SESSION['chat_history'][] = [
+        'question' => $question,
+        'answer' => $botAnswer
+    ];
 }
-
-// Simulated AI-generated summary
-$summary = "🧠 AI Summary of <strong>$uploadedFile</strong><br>
-This is a simulated summary of <em>$category</em> category file. 
-It highlights the key points, core concepts, and provides a TL;DR overview.";
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -140,43 +149,65 @@ It highlights the key points, core concepts, and provides a TL;DR overview.";
             </div>
 
             <!-- Q&A Section -->
-            <div class="chat-box">
+             <div class="chat-box">
                 <h5>💬 Q&A with Your Document</h5>
-                <?php if (!empty($question)): ?>
-                    <div class="message-row">
-                        <div class="message user"><?= $question ?> ❓</div>
-                        <span class="avatar">🤔</span>
-                    </div>
-                    <div class="message-row">
-                        <span class="avatar">🤖</span>
-                        <div class="message bot"><?= $botAnswer ?></div>
-                    </div>
-                    <?php else: ?>
-                        <p class="text-muted">Ask me anything about this document!</p>
-                        <?php endif; ?>
+                <?php if (!empty($_SESSION['chat_history'])): ?>
+                    <?php foreach ($_SESSION['chat_history'] as $msg): ?>
+                        <div class="message-row">
+                            <div class="message user"><?= $msg['question'] ?> ❓</div>
+                            <span class="avatar">🤔</span>
+                        </div>
+                        <div class="message-row">
+                            <span class="avatar">🤖</span>
+                            <div class="message bot"><?= $msg['answer'] ?></div>
+                        </div>
+                        <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="text-muted">Ask me anything about this document!</p>
+                            <?php endif; ?>
 
-                        <form method="POST" action="result.php">
-                            <input type="hidden" name="docFile" value="<?= htmlspecialchars($uploadedFile) ?>">
-                            <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
-                            <div class="input-group mt-2">
-                                <input type="text" name="question" class="form-control" placeholder="Type your question..." required>
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary">Ask</button>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="suggested-questions">
-                            <form method="POST" action="result.php">
+                            <!-- Input box -->
+                             <form method="POST" action="result.php">
                                 <input type="hidden" name="docFile" value="<?= htmlspecialchars($uploadedFile) ?>">
                                 <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
-                                <button name="question" value="What is the main purpose?" class="btn btn-outline-secondary btn-sm">Main purpose?</button>
-                                <button name="question" value="List 3 key points" class="btn btn-outline-secondary btn-sm">3 key points</button>
-                                <button name="question" value="Explain in simple words" class="btn btn-outline-secondary btn-sm">Simple explanation</button>
+                                <div class="input-group mt-2">
+                                    <input type="text" name="question" class="form-control" placeholder="Type your question..." required>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary">Ask</button>
+                                    </div>
+                                </div>
                             </form>
+                            <!-- Suggested questions -->
+                             <div class="suggested-questions mt-2">
+                                <form method="POST" action="result.php">
+                                    <input type="hidden" name="docFile" value="<?= htmlspecialchars($uploadedFile) ?>">
+                                    <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
+                                    <button name="question" value="What is the main purpose?" class="btn btn-outline-secondary btn-sm">Main purpose?</button>
+                                    <button name="question" value="List 3 key points" class="btn btn-outline-secondary btn-sm">3 key points</button>
+                                    <button name="question" value="Explain in simple words" class="btn btn-outline-secondary btn-sm">Simple explanation</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatBox = document.querySelector('.chat-box');
+            // Only animate messages with class 'new-message'
+            const newMessages = chatBox.querySelectorAll('.message-row.new-message');
+            newMessages.forEach((msg, i) => {
+                msg.style.opacity = 0;
+                msg.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    msg.style.transition = 'all 0.6s ease';
+                    msg.style.opacity = 1;
+                    msg.style.transform = 'translateY(0)';
+                    // Remove 'new-message' class after animation so it won't animate again
+                    msg.classList.remove('new-message');
+                }, i * 100);
+            });
+            // Always scroll to bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+            });
+            </script>
 </body>
 </html>
