@@ -53,6 +53,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
 }
 ?>
 
+<?php
+// Ensure upload directory exists
+$uploadDir = 'uploads/';
+if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+// Handle file upload
+if (isset($_FILES['docFile'])) {
+    $uploadedFile = $_FILES['docFile']['name'];
+    $fileTmpPath = $_FILES['docFile']['tmp_name'];
+    $destination = $uploadDir . basename($uploadedFile);
+    move_uploaded_file($fileTmpPath, $destination);
+} else {
+    $uploadedFile = null;
+}
+$category = $_POST['category'] ?? "General";
+?>
+
 
 <!DOCTYPE html>
 <html lang="en">
