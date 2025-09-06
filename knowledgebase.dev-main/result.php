@@ -39,9 +39,7 @@ if ($question) {
         'answer' => $botAnswer
     ];
 }
-?>
 
-<?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
     $uploadedFile = $_FILES['docFile']['name'];
     $tmpName = $_FILES['docFile']['tmp_name'];
@@ -51,9 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
 
     $category = $_POST['category'] ?? 'General';
 }
-?>
 
-<?php
 // Ensure upload directory exists
 $uploadDir = 'uploads/';
 if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
@@ -68,6 +64,27 @@ if (isset($_FILES['docFile'])) {
     $uploadedFile = null;
 }
 $category = $_POST['category'] ?? "General";
+
+// Store uploaded file in session after upload
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
+    $uploadedFile = $_FILES['docFile']['name'];
+    $tmpName = $_FILES['docFile']['tmp_name'];
+
+    $uploadDir = 'uploads/';
+    $filePath = $uploadDir . basename($uploadedFile);
+
+    $category = $_POST['category'] ?? 'General';
+
+    // Move file and save filename in session
+    if (move_uploaded_file($tmpName, $filePath)) {
+        $_SESSION['uploadedFile'] = $uploadedFile;
+        $_SESSION['category'] = $category;
+    }
+}
+
+// Use session value if available
+$uploadedFile = $_SESSION['uploadedFile'] ?? ($_POST['docFile'] ?? "NoFile.pdf");
+$category = $_SESSION['category'] ?? ($_POST['category'] ?? "General");
 ?>
 
 
@@ -107,7 +124,7 @@ iframe { width: 100%; height: 400px; border-radius: 8px; border: 1px solid #cbd5
             <div class="preview-box">
                 <strong><?= htmlspecialchars($uploadedFile) ?></strong><br>
                 <small>Category: <?= htmlspecialchars($category) ?></small>
-                <!-- Document preview (currently using demo PDF.js viewer) -->
+                <?php $filePath = $uploadDir . $uploadedFile; ?>
             
             <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=<?= urlencode($filePath) ?>"></iframe>
             <p class="mt-2 text-muted">⚠️Demo preview (replace with uploaded file path)</p>
@@ -137,7 +154,7 @@ iframe { width: 100%; height: 400px; border-radius: 8px; border: 1px solid #cbd5
             </div>
 
             <!-- Q&A Section -->
-            <div class="chat-box">
+            <div class="chat-box" id="chatBox">
                 <h5>💬 Q&A with Your Document</h5>
                 <?php if (!empty($_SESSION['chat_history'])): ?>
                     <?php foreach ($_SESSION['chat_history'] as $msg): ?>
@@ -156,11 +173,11 @@ iframe { width: 100%; height: 400px; border-radius: 8px; border: 1px solid #cbd5
             </div>
 
             <!-- Input box -->
-            <form method="POST" action="result.php" class="mt-3">
+             <form id="questionForm" method="POST" action="result.php" class="mt-3">
                 <input type="hidden" name="docFile" value="<?= htmlspecialchars($uploadedFile) ?>">
                 <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
                 <div class="input-group">
-                    <input type="text" name="question" class="form-control" placeholder="Type your question..." required>
+                    <input type="text" name="question" id="questionInput" class="form-control" placeholder="Type your question..." required>
                     <div class="input-group-append">
                         <button class="btn btn-primary">Ask</button>
                     </div>
@@ -198,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
         msg.style.opacity = 0;
         msg.style.transform = 'translateY(20px)';
         setTimeout(() => {
-            msg.style.transition = 'all 0.9s ease';
+            msg.style.transition = 'all 0.6s ease';
             msg.style.opacity = 1;
             msg.style.transform = 'translateY(0)';
             msg.classList.remove('new-message'); // prevent re-animation
@@ -207,8 +224,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Scroll to bottom
     chatBox.scrollTop = chatBox.scrollHeight;
+
+    //Add AJAX JavaScript to handle form submission
+    document.getElementById('questionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Extract the updated chat box from the response
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newChatBox = doc.getElementById('chatBox');
+        document.getElementById('chatBox').innerHTML = newChatBox.innerHTML;
+    });
+});
 });
 </script>
-
 </body>
 </html>
