@@ -58,7 +58,7 @@ body {
   background-color: var(--card-bg);
   padding: 1.5rem;
   height: 100vh;
-  border-right: 1px solid #846f6fff;
+  border-right: 1px solid transparent;
   border-radius: 0 20px 20px 0;
   transition: all 0.4s ease;
 }
