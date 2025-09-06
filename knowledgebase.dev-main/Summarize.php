@@ -1,14 +1,14 @@
 <?php
 session_start();
 
-// Predefined example files
+// Example files
 $files = [
     "Tutorial_03.pdf",
     "Lecture_Notes.docx",
     "LegacySystem.txt"
 ];
 
-// Handle file upload & redirect
+// Handle file upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
     $uploadedFile = $_FILES['docFile']['name'];
     $category = $_POST['category'] ?? 'Uncategorized';
@@ -32,193 +32,148 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Summarize Files | iFAST Smart Docs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summarize | iFAST Smart Docs</title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <script src="https://kit.fontawesome.com/1b5fdf4bb2.js" crossorigin="anonymous"></script>
+
 <style>
 :root {
-  --bg-color: #FFE6B3;      /* warm boba orange */
+  --bg-color: #FFE6B3;
   --text-color: #4A2C2A;
   --card-bg: #FFDAB3;
+  --navbar-bg: #FFAD60;
   --button-bg: #FF8050;
   --button-text: #fff;
-  --input-bg: #FFF3E0;
-  --input-border: #FFB066;
-  --blue-bg: #7fa3c7ff;       /* soft blue theme */
+
+  --blue-bg: #7fa3c7ff;
   --blue-text: #1e2e5aff;
+  --blue-card: #E0F2FF;
+  --blue-navbar: #2C3E50;
+  --blue-button: #2a6a94ff;
+  --blue-button-text: #fff;
 }
 
 body {
   background-color: var(--bg-color);
-  font-family: 'Segoe UI', sans-serif;
+  color: var(--text-color);
+  font-family: 'Poppins', sans-serif;
   transition: all 0.5s ease;
+  margin:0;
 }
 
+/* Navbar */
+.navbar {
+  background-color: var(--navbar-bg);
+  border-radius: 0 0 20px 20px;
+  padding: 1rem 2rem;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+.navbar-brand { font-weight:700; font-size:1.8rem; color:#fff !important; }
+.navbar-brand small { font-weight:400; font-size:0.9rem; color:#FFF3E0; }
+.nav-link { color:#fff !important; }
+.nav-link:hover { color:#FFDAB3 !important; }
+
+/* Sidebar */
 .sidebar {
   background-color: var(--card-bg);
   padding: 1.5rem;
-  height: 100vh;
-  border-right: 1px solid transparent;
   border-radius: 0 20px 20px 0;
-  transition: all 0.4s ease;
+  height: 100vh;
 }
+.file-list { list-style:none; padding-left:0; }
+.file-list li { margin-bottom:10px; font-weight:500; color: var(--text-color); transition: transform 0.3s; }
+.file-list li:hover { transform: translateX(5px); color:#201714ff; }
 
-.file-list {
-  list-style: none;
-  padding-left: 0;
-}
+.folder-icon { display:inline-block; animation: bounce 1.2s infinite ease-in-out; margin-right:6px; }
+@keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
 
-.file-list li {
-  margin-bottom: 12px;
-  font-weight: 500;
-  color: var(--text-color);
-  transition: transform 0.3s ease;
-}
-.file-list li:hover {
-  transform: translateX(5px);
-  color: #201714ff;
-}
-
-.file-list small {
-  color: #7F4F24;
-}
-
-.main-content {
-  padding: 2rem;
-}
-
-.summary-box {
-  margin-top: 2rem;
-  background: #FFF2E0;
-  padding: 1.5rem;
-  border-radius: 12px;
-  color: var(--text-color);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-}
-.summary-box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 25px rgba(0,0,0,0.12);
-}
-
+/* Main Content */
+.main-content { padding:2rem; }
 input[type="text"], input[type="file"] {
-  background-color: var(--input-bg);
-  border: 1px solid var(--input-border);
-  border-radius: 50px;
-  padding: 0.2rem 1rem;
-  transition: all 0.3s ease;
+  background-color:#FFF3E0; border:1px solid #FFB066; border-radius:50px; padding:0.2rem 1rem;
+  transition: all 0.3s;
 }
-input[type="text"]:focus, input[type="file"]:focus {
-  border-color: #FF5722;
-  box-shadow: 0 0 8px rgba(255,87,34,0.3);
-  outline: none;
-}
+input:focus { border-color:#FF5722; box-shadow:0 0 8px rgba(255,87,34,0.3); outline:none; }
 
 button {
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  border-radius: 50px;
-  padding: 0.6rem 2rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  background-color: var(--button-bg); color: var(--button-text);
+  border-radius:50px; padding:0.6rem 2rem; font-weight:600;
+  transition: all 0.3s;
 }
-button:hover {
-  background-color: #c5bebdff;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-}
+button:hover { background-color:#c5bebdff; transform:translateY(-2px); box-shadow:0 5px 10px rgba(0,0,0,0.2); }
 
 /* Blue Theme */
 body.blue-theme {
   --bg-color: var(--blue-bg);
   --text-color: var(--blue-text);
-  --card-bg: #E0F2FF;
-  --button-bg: #2a6a94ff;
-  --button-text: #fff;
-  --input-bg: #F0F8FF;
-  --input-border: #5d758dff;
-}
-
-/* Smooth transitions */
-* {
-  transition: all 0.3s ease;
-}
-
-/* Folder icon animation */
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-}
-
-.folder-icon {
-    animation: bounce 1.2s infinite ease-in-out;
-    display: inline-block;
+  --card-bg: var(--blue-card);
+  --navbar-bg: var(--blue-navbar);
+  --button-bg: var(--blue-button);
+  --button-text: var(--blue-button-text);
 }
 </style>
 </head>
 <body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <a class="navbar-brand font-weight-bold" href="#">iFAST Smart Docs <small>Documentation & Summaries</small></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarText">
+    <ul class="navbar-nav ml-auto align-items-center">
+      <li class="nav-item">
+        <a class="nav-link" href="https://yourprojecthomepage.com" target="_blank">Project Homepage</a>
+      </li>
+      <li class="nav-item dropdown">
+        <button class="btn btn-outline-light dropdown-toggle" type="button" data-toggle="dropdown">
+          English
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+          <a class="dropdown-item" href="#">French</a>
+          <a class="dropdown-item" href="#">Bulgarian</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
 
 <div class="container-fluid">
   <div class="row">
 
-    <!-- Sidebar: List of example files -->
+    <!-- Sidebar -->
     <div class="col-md-3 sidebar">
-        <h5 class="mb-4">📁 Uploaded Files</h5>
+        <h5>📁 Uploaded Files</h5>
         <ul class="file-list">
-            <?php foreach ($files as $file): ?>
-                <li><?= htmlspecialchars($file) ?></li>
+            <?php foreach($files as $file): ?>
+            <li><?= htmlspecialchars($file) ?></li>
             <?php endforeach; ?>
         </ul>
         <hr>
-
-       <!-- Upload form -->
         <form action="result.php" method="POST" enctype="multipart/form-data">
-            <div class="form-group" style="position: relative;">
-                <label style="display: flex; align-items: center; font-weight: 600; font-size: 1.1rem;">
-                    <span class="folder-icon" style="display: inline-block; margin-right: 8px;">📂</span>
-                    Select or Create Folder
-                </label>
-                <input type="text" name="category" class="form-control" placeholder="+ New Folder" required>
-            </div>
+          <div class="form-group" style="display:flex; align-items:center;">
+            <span class="folder-icon">📂</span>
+            <input type="text" name="category" class="form-control" placeholder="+ New Folder" required>
+          </div>
     </div>
 
-    <!-- Main content -->
+    <!-- Main Content -->
     <div class="col-md-9 main-content">
-        <h2 class="mb-4">Summarize Documentation</h2>
+        <h2>Upload & Summarize Documentation</h2>
         <div class="form-group">
-            <label>Upload File</label>
-            <input type="file" name="docFile" class="form-control" required>
+          <input type="file" name="docFile" class="form-control" required>
         </div>
         <button type="submit" class="btn">Upload & Summarize</button>
         </form>
-
-        <?php if (isset($error)): ?>
-            <div class="alert alert-danger mt-3"><?= htmlspecialchars($error) ?></div>
+        <?php if(isset($error)): ?>
+          <div class="alert alert-danger mt-3"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
-        <br>
-        <!-- Theme toggle button -->
-        <button id="themeToggle" class="btn mt-4">🔄 Change Theme</button>
     </div>
   </div>
-</form>
 </div>
 
-<script>
-const themeToggle = document.getElementById('themeToggle');
-themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('blue-theme');
-    // Store preference
-    if(document.body.classList.contains('blue-theme')){
-        localStorage.setItem('theme', 'blue');
-    } else {
-        localStorage.setItem('theme', 'boba');
-    }
-});
-
-// Load previous theme
-if(localStorage.getItem('theme') === 'blue') {
-    document.body.classList.add('blue-theme');
-}
-</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
