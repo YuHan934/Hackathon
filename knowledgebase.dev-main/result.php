@@ -58,6 +58,7 @@ if (isset($_POST['reset'])) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,7 +74,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f7f9fc; }
 iframe { width: 100%; height: 400px; border-radius: 8px; border: 1px solid #cbd5e0; }
 .main-content { padding: 2rem; overflow-y: auto; }
 .summary-box { background: #edf2f7; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; }
-.chat-box { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; padding: 1rem; max-width: 1000px; margin: 2rem auto; overflow-y: auto; max-height: 400px; }
+.chat-box { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; padding: 1rem; max-width: auto; margin: 2rem; overflow-y: auto; max-height: 400px; }
 .message-row { display: flex; align-items: flex-start; margin-bottom: 1rem; }
 .avatar { margin-right: 0.5rem; font-size: 1.5rem; }
 .message { padding: 0.8rem 1rem; border-radius: 16px; max-width: auto; }
