@@ -1,14 +1,31 @@
 <?php
 session_start();
 
+// Ensure upload directory exists
+$uploadDir = 'uploads/';
+if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+// Handle file upload
+if (isset($_FILES['docFile']) && $_FILES['docFile']['error'] === 0) {
+    $uploadedFile = $_FILES['docFile']['name'];
+    $tmpName = $_FILES['docFile']['tmp_name'];
+    $category = $_POST['category'] ?? 'General';
+    $destination = $uploadDir . basename($uploadedFile);
+
+    if (move_uploaded_file($tmpName, $destination)) {
+        $_SESSION['uploadedFile'] = $uploadedFile;
+        $_SESSION['category'] = $category;
+    }
+}
+
+// Always read from session
+$uploadedFile = $_SESSION['uploadedFile'] ?? "NoFile.pdf";
+$category = $_SESSION['category'] ?? "Uncategorized";
+
 // Initialize chat history
 if (!isset($_SESSION['chat_history'])) {
     $_SESSION['chat_history'] = [];
 }
-
-// Get uploaded file and category
-$uploadedFile = $_POST['docFile'] ?? "NoFile.pdf";
-$category = $_POST['category'] ?? "Uncategorized";
 
 // Predefined fun answers (demo)
 $answers = [
@@ -19,16 +36,8 @@ $answers = [
     "🤓 Takeaway: Always double-check your notes 😅"
 ];
 
-// Handle Reset Chat
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
-    $_SESSION['chat_history'] = [];
-    header("Location: result.php");
-    exit;
-}
-
 // Handle new question
 $question = $_POST['question'] ?? null;
-$botAnswer = null;
 if ($question) {
     $question = htmlspecialchars(trim($question));
     $botAnswer = $answers[array_rand($answers)];
@@ -40,51 +49,13 @@ if ($question) {
     ];
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
-    $uploadedFile = $_FILES['docFile']['name'];
-    $tmpName = $_FILES['docFile']['tmp_name'];
-
-    $uploadDir = 'uploads/';
-    $filePath = $uploadDir . basename($uploadedFile);
-
-    $category = $_POST['category'] ?? 'General';
+// Handle Reset Chat
+if (isset($_POST['reset'])) {
+    $_SESSION['chat_history'] = []; // Only clear chat
+    // Keep uploadedFile and category intact
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
-
-// Ensure upload directory exists
-$uploadDir = 'uploads/';
-if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
-
-// Handle file upload
-if (isset($_FILES['docFile'])) {
-    $uploadedFile = $_FILES['docFile']['name'];
-    $fileTmpPath = $_FILES['docFile']['tmp_name'];
-    $destination = $uploadDir . basename($uploadedFile);
-    move_uploaded_file($fileTmpPath, $destination);
-} else {
-    $uploadedFile = null;
-}
-$category = $_POST['category'] ?? "General";
-
-// Store uploaded file in session after upload
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
-    $uploadedFile = $_FILES['docFile']['name'];
-    $tmpName = $_FILES['docFile']['tmp_name'];
-
-    $uploadDir = 'uploads/';
-    $filePath = $uploadDir . basename($uploadedFile);
-
-    $category = $_POST['category'] ?? 'General';
-
-    // Move file and save filename in session
-    if (move_uploaded_file($tmpName, $filePath)) {
-        $_SESSION['uploadedFile'] = $uploadedFile;
-        $_SESSION['category'] = $category;
-    }
-}
-
-// Use session value if available
-$uploadedFile = $_SESSION['uploadedFile'] ?? ($_POST['docFile'] ?? "NoFile.pdf");
-$category = $_SESSION['category'] ?? ($_POST['category'] ?? "General");
 ?>
 
 
@@ -125,13 +96,12 @@ iframe { width: 100%; height: 400px; border-radius: 8px; border: 1px solid #cbd5
                 <strong><?= htmlspecialchars($uploadedFile) ?></strong><br>
                 <small>Category: <?= htmlspecialchars($category) ?></small>
                 <?php $filePath = $uploadDir . $uploadedFile; ?>
-            
             <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=<?= urlencode($filePath) ?>"></iframe>
             <p class="mt-2 text-muted">⚠️Demo preview (replace with uploaded file path)</p>
 
             </div>
         </div>
-            
+
         <!-- RIGHT SIDE: Summary + Q&A -->
         <div class="col-md-4 main-content">
             <h3 class="mb-4">Smart Summaries & Q&A</h3>
@@ -177,7 +147,7 @@ iframe { width: 100%; height: 400px; border-radius: 8px; border: 1px solid #cbd5
                 <input type="hidden" name="docFile" value="<?= htmlspecialchars($uploadedFile) ?>">
                 <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
                 <div class="input-group">
-                    <input type="text" name="question" id="questionInput" class="form-control" placeholder="Type your question..." required>
+                    <input type="text" name="question" class="form-control" placeholder="Type your question..." required>
                     <div class="input-group-append">
                         <button class="btn btn-primary">Ask</button>
                     </div>
@@ -215,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         msg.style.opacity = 0;
         msg.style.transform = 'translateY(20px)';
         setTimeout(() => {
-            msg.style.transition = 'all 0.6s ease';
+            msg.style.transition = 'all 0.9s ease';
             msg.style.opacity = 1;
             msg.style.transform = 'translateY(0)';
             msg.classList.remove('new-message'); // prevent re-animation
