@@ -77,7 +77,7 @@ iframe { width: 100%; height: 400px; border-radius: 8px; border: 1px solid #cbd5
 .chat-box { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; padding: 1rem; max-width: 1000px; margin: 2rem auto; overflow-y: auto; max-height: 400px; }
 .message-row { display: flex; align-items: flex-start; margin-bottom: 1rem; }
 .avatar { margin-right: 0.5rem; font-size: 1.5rem; }
-.message { padding: 0.8rem 1rem; border-radius: 16px; max-width: 70%; }
+.message { padding: 0.8rem 1rem; border-radius: 16px; max-width: auto; }
 .user { background: #d1e7ff; margin-left: auto; }
 .bot { background: #e2e8f0; }
 .suggested-questions { margin-top: 1rem; }
