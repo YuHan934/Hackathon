@@ -53,6 +53,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #f7f9fc; }
 .container-fluid { height: 100vh; }
 .sidebar { background: #fff; padding: 1.5rem; height: 100vh; border-right: 1px solid #dee2e6; overflow-y: auto; }
 .preview-box { background: #f1f5f9; border-radius: 8px; padding: 10px; margin-bottom: 1rem; text-align: center; }
+iframe { width: 100%; height: 400px; border-radius: 8px; border: 1px solid #cbd5e0; }
 .main-content { padding: 2rem; overflow-y: auto; }
 .summary-box { background: #edf2f7; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; }
 .chat-box { background: #fff; border: 1px solid #dee2e6; border-radius: 12px; padding: 1rem; max-width: 1000px; margin: 2rem auto; overflow-y: auto; max-height: 400px; }
@@ -72,17 +73,18 @@ body { font-family: 'Segoe UI', sans-serif; background: #f7f9fc; }
     <div class="row">
         <!-- LEFT SIDE: Document Preview -->
         <div class="col-md-8 sidebar">
-            <h5 class="mb-7">📄 Document Preview</h5>
+            <h5 class="mb-5">📄 Document Preview</h5>
             <div class="preview-box">
                 <strong><?= htmlspecialchars($uploadedFile) ?></strong><br>
                 <small>Category: <?= htmlspecialchars($category) ?></small>
-            </div>
-
-            <!-- Document preview (currently using demo PDF.js viewer) -->
-            <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=sample.pdf" width=950px></iframe>
+                <!-- Document preview (currently using demo PDF.js viewer) -->
+            
+            <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=sample.pdf"></iframe>
             <p class="mt-2 text-muted">⚠️Demo preview (replace with uploaded file path)</p>
-        </div>
 
+            </div>
+        </div>
+            
         <!-- RIGHT SIDE: Summary + Q&A -->
         <div class="col-md-4 main-content">
             <h3 class="mb-4">Smart Summaries & Q&A</h3>
@@ -144,7 +146,6 @@ body { font-family: 'Segoe UI', sans-serif; background: #f7f9fc; }
                     <button name="question" value="List 3 key points" class="btn btn-outline-secondary btn-sm">3 key points</button>
                     <button name="question" value="Explain in simple words" class="btn btn-outline-secondary btn-sm">Simple explanation</button>
                 </form>
-            </div>
 
             <!-- Reset chat -->
             <div class="chat-controls">
