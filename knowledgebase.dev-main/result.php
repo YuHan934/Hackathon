@@ -41,6 +41,19 @@ if ($question) {
 }
 ?>
 
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
+    $uploadedFile = $_FILES['docFile']['name'];
+    $tmpName = $_FILES['docFile']['tmp_name'];
+
+    $uploadDir = 'uploads/';
+    $filePath = $uploadDir . basename($uploadedFile);
+
+    $category = $_POST['category'] ?? 'General';
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,7 +92,7 @@ iframe { width: 100%; height: 400px; border-radius: 8px; border: 1px solid #cbd5
                 <small>Category: <?= htmlspecialchars($category) ?></small>
                 <!-- Document preview (currently using demo PDF.js viewer) -->
             
-            <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=sample.pdf"></iframe>
+            <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=<?= urlencode($filePath) ?>"></iframe>
             <p class="mt-2 text-muted">⚠️Demo preview (replace with uploaded file path)</p>
 
             </div>
