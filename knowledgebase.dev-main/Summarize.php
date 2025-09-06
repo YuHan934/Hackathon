@@ -82,7 +82,6 @@ body { background-color: #f7f9fc; font-family: 'Segoe UI', sans-serif; }
         <div class="alert alert-danger mt-3"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 </div>
-
 </div>
 </div>
 </body>
