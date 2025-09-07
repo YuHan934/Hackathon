@@ -14,6 +14,7 @@
 <body>
 
 <?php include 'navbar.php'; ?>
+
 <!-- Boba circles -->
 <div class="boba-bg" id="bobaBg">
   <div class="boba-circle" style="width:80px;height:80px;top:20%;left:15%;"></div>
@@ -23,6 +24,7 @@
   <div class="boba-circle" style="width:90px;height:90px;top:10%;left:80%;"></div>
 </div>
 
+<!-- Hero Section -->
 <section class="hero mx-auto">
   <h1>Fix the Docs</h1>
   <p>Smarter, Faster, Maintainable Documentation for the Real World</p>
@@ -34,22 +36,36 @@
   </form>
 </section>
 
+<!-- Feature Cards -->
 <div class="container my-5 features-container">
   <div class="feature-card-wrapper" id="featureWrapper">
+
+    <!-- Auto-generate Documentation -->
     <a href="auto-generate_documentation.php" class="feature-card">
       <i class="fas fa-code feature-icon"></i>
       <h3 class="feature-title">Auto-generate Documentation</h3>
       <p class="feature-desc">Paste your code or upload files to quickly create clean, professional documentation with AI assistance.</p>
     </a>
+
+    <!-- Smart Summaries -->
     <a href="summarize.php" class="feature-card">
       <i class="fas fa-file-alt feature-icon"></i>
       <h3 class="feature-title">Smart Summaries</h3>
       <p class="feature-desc">Get concise, clear summaries of your documentation to speed up reading and onboarding.</p>
     </a>
+
+    <!-- ✅ NEW: OCR Feature -->
+    <a href="ocr.php" class="feature-card">
+      <i class="fas fa-image feature-icon"></i>
+      <h3 class="feature-title">Image to Text (OCR)</h3>
+      <p class="feature-desc">Paste or upload screenshots of documents to extract text using smart OCR simulation.</p>
+    </a>
+
   </div>
   <div class="carousel-dots" id="carouselDots"></div>
 </div>
 
+<!-- FAQs and Articles -->
 <div class="container my-5">
   <div class="row">
     <div class="col-md-6">
@@ -73,6 +89,7 @@
 
 <?php include 'footer.php'; ?>
 
+<!-- JS Scripts -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="script.js"></script>
