@@ -5,7 +5,7 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarText">
     <ul class="navbar-nav ml-auto align-items-center">
-      <li class="nav-item"><a class="nav-link" href="#">Project Homepage</a></li>
+      <li class="nav-item"><a class="nav-link" href="index.php">Project Homepage</a></li>
       <li class="nav-item dropdown">
         <button class="btn btn-outline-light dropdown-toggle" type="button" data-toggle="dropdown">English</button>
         <div class="dropdown-menu dropdown-menu-right">

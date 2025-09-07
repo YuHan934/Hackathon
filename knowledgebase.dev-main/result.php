@@ -63,6 +63,7 @@ if (isset($_POST['reset'])) {
 <meta charset="UTF-8">
 <title>Smart Summaries & Q&A | iFAST Smart Docs</title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="style.css">
 <style>
 :root {
   --bg-color: #FFE6B3;
