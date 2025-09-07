@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
         <div class="form-group">
           <input type="file" name="docFile" class="form-control" required>
         </div>
-        <button type="submit" class="btn">Upload & Summarize</button>
+        <button type="submit">Upload & Summarize</button>
         </form>
         <?php if(isset($error)): ?>
           <div class="alert alert-danger mt-3"><?= htmlspecialchars($error) ?></div>
