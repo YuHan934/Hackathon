@@ -1,4 +1,8 @@
 <?php
+require __DIR__ . '/vendor/autoload.php'; 
+
+use Dompdf\Dompdf;
+
 $docs = [
     "GettingStarted.md",
     "API_Reference.pdf",
@@ -6,6 +10,8 @@ $docs = [
 ];
 
 $generatedDoc = null;
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['topic'])) {
     $topic = htmlspecialchars(trim($_POST['topic']));
     $length = $_POST['length'] ?? 'brief';
@@ -27,6 +33,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['topic'])) {
     if (!in_array($topic, $docs)) {
         $docs[] = $topic;
     }
+}
+
+
+if (isset($_POST['export_pdf']) && !empty($_POST['generatedDoc'])) {
+    $content = nl2br(htmlspecialchars($_POST['generatedDoc']));
+    $dompdf = new Dompdf();
+    $dompdf->loadHtml("<h2>Generated Documentation</h2><p>{$content}</p>");
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+    $dompdf->stream("documentation.pdf", ["Attachment" => 1]);
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -75,14 +92,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['topic'])) {
                 </select>
             </div>
 
-            <button type="submit">Generate Documentation</button>
+            <button type="submit" class="btn btn-primary">Generate Documentation</button>
         </form>
 
         <?php if ($generatedDoc): ?>
-            <div class="doc-box">
+            <div class="doc-box mt-4">
                 <h5>📝 Generated Documentation</h5>
-                <p><?= $generatedDoc ?></p>
+                <pre><?= htmlspecialchars($generatedDoc) ?></pre>
             </div>
+
+           
+            <form action="" method="POST" class="mt-3">
+                <input type="hidden" name="generatedDoc" value="<?= htmlspecialchars($generatedDoc) ?>">
+                <button type="submit" name="export_pdf" class="btn btn-success">📥 Export to PDF</button>
+            </form>
         <?php endif; ?>
     </div>
 
