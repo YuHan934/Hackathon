@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['docFile'])) {
     <div class="col-md-9 main-content">
         <h2>Upload & Summarize Documentation</h2>
         <div class="form-group">
-          <input type="file" name="docFile" class="form-control" required>
+          <input type="file" name="docFile" class="form-control" required style="padding: 0.2rem;">
         </div>
         <button type="submit">Upload & Summarize</button>
         </form>
