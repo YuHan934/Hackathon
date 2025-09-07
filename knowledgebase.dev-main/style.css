@@ -202,7 +202,7 @@ button {
   font-weight: 600;
   transition: all 0.3s;
 }
-button:hover { background-color: #c23d0c; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(116,16,16,0.2); }
+button:hover { background-color: #f28259; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(116,16,16,0.2); }
 
 .doc-box {
   margin-top: 2rem;
